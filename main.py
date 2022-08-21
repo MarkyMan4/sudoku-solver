@@ -1,44 +1,23 @@
-from graph import Graph
+from sudoku_solver.solver import Solver
 
-BOARD_SIZE = 9
+def main():
+    # read in file and format as 2d array
+    with open('puzzles/test_0') as f:
+        lines = f.readlines()
 
-# create a graph that represents sudoku board
-# a cell represents a vertex
-# each vertex is connected to all vertices within the same row, column and region
-g = Graph()
+    lines = [line.replace('\n', '') for line in lines]
+    puzzle = []
+    
+    for line in lines:
+        row = []
+        for num in line:
+            row.append(int(num))
 
-cells = [i for i in range(BOARD_SIZE ** 2)]
+        puzzle.append(row)
 
-for cell in cells:
-    # add edges to cells within row
-    i = cell
-    while i % BOARD_SIZE != 0:
-        i -= 1
-        g.add_edge(cell, i)
+    s = Solver()
+    s.color_graph()
 
-    i = cell
-    while (i + 1) % BOARD_SIZE != 0:
-        i += 1
-        g.add_edge(cell, i)
 
-    # add edges to cells within column
-    i = cell
-    while i - BOARD_SIZE > 0:
-        i -= BOARD_SIZE
-        g.add_edge(cell, i)
-
-    i = cell
-    while i + BOARD_SIZE < BOARD_SIZE ** 2:
-        i += BOARD_SIZE
-        g.add_edge(cell, i)
-
-    # add edges to cells within region
-    # g.add_edge()
-
-print(g.graph[31])
-
-# g.add_edge(1, 2)
-# g.add_edge(1, 3)
-# g.add_edge(2, 3)
-# g.add_edge(2, 4)
-
+if __name__ == '__main__':
+    main()
