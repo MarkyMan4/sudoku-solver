@@ -15,7 +15,7 @@ def main():
 
         puzzle.append(row)
 
-    s = Solver()
+    s = Solver(puzzle)
     s.color_graph()
 
 

@@ -19,6 +19,12 @@ class Solver:
                 for j in range(len(board[i])):
                     self.board.append(board[i][j])
 
+        self.given_cells = []
+
+        for i in range(len(self.board)):
+            if self.board[i] != 0:
+                self.given_cells.append(i)
+
         self.graph = self.init_graph()
 
     def init_graph(self) -> Graph:
@@ -97,13 +103,37 @@ class Solver:
 
         #     self.graph.update_vertex(vertex, color)
 
+        visited = []
+
         for vertex in self.graph.edges.keys():
-            for edge in self.graph.edges[vertex]:
-                if self.graph.vertices[vertex] == self.graph.vertices[edge]:
-                    self.graph.update_vertex(edge, self.graph.vertices[edge] + 1)
+            if vertex in visited:
+                continue
 
-        for i, vertex in enumerate(self.graph.vertices):
-            print('%3s' % self.graph.vertices[vertex], end=' ')
+            queue = []
+            visited.append(vertex)
+            queue.append(vertex)
 
-            if (i + 1) % 9 == 0:
-                print()
+            while len(queue) > 0:
+                next_v = queue.pop(0)
+                vertex_value = self.graph.vertices[next_v]
+
+                print(f'looking at edges for node {next_v} with value {vertex_value}')
+
+                for edge in self.graph.edges[next_v]:
+                    edge_value = self.graph.vertices[edge]
+
+                    if vertex_value == edge_value and edge not in self.given_cells:
+
+                        self.graph.update_vertex(edge, edge_value + 1)
+
+                    if edge not in visited:
+                        visited.append(edge)
+                        queue.append(edge)
+
+                for i, vertex in enumerate(self.graph.vertices):
+                    print('%3s' % self.graph.vertices[vertex], end=' ')
+
+                    if (i + 1) % 9 == 0:
+                        print()
+
+                print('-----------------------------')
