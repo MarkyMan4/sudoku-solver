@@ -117,23 +117,30 @@ class Solver:
                 next_v = queue.pop(0)
                 vertex_value = self.graph.vertices[next_v]
 
-                print(f'looking at edges for node {next_v} with value {vertex_value}')
+                # print(f'looking at edges for node {next_v} with value {vertex_value}')
 
                 for edge in self.graph.edges[next_v]:
                     edge_value = self.graph.vertices[edge]
 
                     if vertex_value == edge_value and edge not in self.given_cells:
+                        # if edge_value == 9:
+                        #     edge_value = 1
+                        # else:
+                        #     edge_value += 1
+                        edge_value += 1
+                        
+                        self.graph.update_vertex(edge, edge_value)
 
-                        self.graph.update_vertex(edge, edge_value + 1)
+                    if edge_value in self.graph.get_adj_values(edge) or edge not in visited:
+                        queue.append(edge)
 
                     if edge not in visited:
                         visited.append(edge)
-                        queue.append(edge)
 
-                for i, vertex in enumerate(self.graph.vertices):
-                    print('%3s' % self.graph.vertices[vertex], end=' ')
+            for i, vertex in enumerate(self.graph.vertices):
+                print('%3s' % self.graph.vertices[vertex], end=' ')
 
-                    if (i + 1) % 9 == 0:
-                        print()
+                if (i + 1) % 9 == 0:
+                    print()
 
-                print('-----------------------------')
+            print('-----------------------------')
