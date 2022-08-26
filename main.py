@@ -16,7 +16,7 @@ def main():
         puzzle.append(row)
 
     s = Solver(puzzle)
-    s.color_graph()
+    res = s.color_graph()
 
 
 if __name__ == '__main__':

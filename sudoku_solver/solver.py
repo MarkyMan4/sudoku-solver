@@ -7,10 +7,11 @@ REGION_SIZE = 3
 
 class Solver:
     def __init__(self, board: List[List[int]] = None):
-        self.colors = [i for i in range(BOARD_SIZE)]
+        self.colors = [i + 1 for i in range(BOARD_SIZE)]
 
         # board is represented as a 1D list
         self.board = [0 for _ in range(BOARD_SIZE ** 2)]
+        self.counts = [20 for _ in range(BOARD_SIZE ** 2)]
 
         if board:
             self.board = []
@@ -19,11 +20,11 @@ class Solver:
                 for j in range(len(board[i])):
                     self.board.append(board[i][j])
 
-        self.given_cells = []
+        self.known_cells = []
 
         for i in range(len(self.board)):
             if self.board[i] != 0:
-                self.given_cells.append(i)
+                self.known_cells.append(i)
 
         self.graph = self.init_graph()
 
@@ -87,60 +88,82 @@ class Solver:
 
         return graph
 
-    def color_graph(self):
-        # shuffled = list(self.graph.vertices.keys())
-        # random.shuffle(shuffled)
+    # find the vertex that the largest number of colored cells are connected to
+    def get_converging_vertex(self):
+        max_connections = 0
+        max_vertex = 0
 
-        # for vertex in shuffled:
-        #     if self.graph.vertices[vertex]:
-        #         continue
-            
-        #     adj_vals = self.graph.get_adj_values(vertex)
-        #     color = 1
-
-        #     while color in adj_vals:
-        #         color += 1
-
-        #     self.graph.update_vertex(vertex, color)
-
-        visited = []
-
-        for vertex in self.graph.edges.keys():
-            if vertex in visited:
+        for vertex in self.graph.vertices:
+            if vertex in self.known_cells:
                 continue
 
-            queue = []
-            visited.append(vertex)
-            queue.append(vertex)
+            connections_to_known = 0
+            
+            for edge in self.graph.edges[vertex]:
+                if edge in self.known_cells:
+                    connections_to_known += 1
+            
+            if connections_to_known > max_connections:
+                max_connections = connections_to_known
+                max_vertex = vertex
 
-            while len(queue) > 0:
-                next_v = queue.pop(0)
-                vertex_value = self.graph.vertices[next_v]
+        return max_vertex
 
-                # print(f'looking at edges for node {next_v} with value {vertex_value}')
+    def color_graph(self):
+        for _ in range(10):
+            max_vertex = self.get_converging_vertex()
+            color_options = [color for color in self.colors if color not in self.graph.get_adj_values(max_vertex)]
 
-                for edge in self.graph.edges[next_v]:
-                    edge_value = self.graph.vertices[edge]
+            if len(color_options) == 1:
+                self.graph.update_vertex(max_vertex, color_options[0])
+                self.known_cells.append(max_vertex)
 
-                    if vertex_value == edge_value and edge not in self.given_cells:
-                        # if edge_value == 9:
-                        #     edge_value = 1
-                        # else:
-                        #     edge_value += 1
-                        edge_value += 1
-                        
-                        self.graph.update_vertex(edge, edge_value)
+            print(max_vertex)
+            print(color_options)
 
-                    if edge_value in self.graph.get_adj_values(edge) or edge not in visited:
-                        queue.append(edge)
 
-                    if edge not in visited:
-                        visited.append(edge)
+        # visited = []
 
-            for i, vertex in enumerate(self.graph.vertices):
-                print('%3s' % self.graph.vertices[vertex], end=' ')
+        # for vertex in self.graph.edges.keys():
+        #     if vertex in visited:
+        #         continue
 
-                if (i + 1) % 9 == 0:
-                    print()
+        #     queue = []
+        #     visited.append(vertex)
+        #     queue.append(vertex)
 
-            print('-----------------------------')
+        #     while len(queue) > 0:
+        #         next_v = queue.pop(0)
+        #         vertex_value = self.graph.vertices[next_v]
+
+        #         # print(f'looking at edges for node {next_v} with value {vertex_value}')
+
+        #         for edge in self.graph.edges[next_v]:
+        #             edge_value = self.graph.vertices[edge]
+
+        #             if vertex_value == edge_value and edge not in self.known_cells:
+        #                 edge_value += 1
+
+        #                 self.graph.update_vertex(edge, edge_value)
+
+        #             if edge_value in self.graph.get_adj_values(edge) or edge not in visited:
+        #                 queue.append(edge)
+
+        #             if edge not in visited:
+        #                 visited.append(edge)
+
+        res = []
+        row = []
+
+        for i, vertex in enumerate(self.graph.vertices):
+            print('%3s' % self.graph.vertices[vertex], end=' ')
+            row.append(self.graph.vertices[vertex])
+
+            if (i + 1) % 9 == 0:
+                print()
+                res.append(row)
+                row = []
+
+        print('-----------------------------')
+
+        return res
