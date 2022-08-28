@@ -110,47 +110,46 @@ class Solver:
         return max_vertex
 
     def color_graph(self):
-        for _ in range(10):
-            max_vertex = self.get_converging_vertex()
-            color_options = [color for color in self.colors if color not in self.graph.get_adj_values(max_vertex)]
+        # max_vertex = self.get_converging_vertex()
+        # color_options = [color for color in self.colors if color not in self.graph.get_adj_values(max_vertex)]
 
-            if len(color_options) == 1:
-                self.graph.update_vertex(max_vertex, color_options[0])
-                self.known_cells.append(max_vertex)
+        # if len(color_options) == 1:
+        #     self.graph.update_vertex(max_vertex, color_options[0])
+        #     self.known_cells.append(max_vertex)
 
-            print(max_vertex)
-            print(color_options)
+        # print(max_vertex)
+        # print(color_options)
 
 
-        # visited = []
+        visited = []
 
-        # for vertex in self.graph.edges.keys():
-        #     if vertex in visited:
-        #         continue
+        for vertex in self.graph.edges.keys():
+            if vertex in visited:
+                continue
 
-        #     queue = []
-        #     visited.append(vertex)
-        #     queue.append(vertex)
+            queue = []
+            visited.append(vertex)
+            queue.append(vertex)
 
-        #     while len(queue) > 0:
-        #         next_v = queue.pop(0)
-        #         vertex_value = self.graph.vertices[next_v]
+            while len(queue) > 0:
+                next_v = queue.pop(0)
+                vertex_value = self.graph.vertices[next_v]
 
-        #         # print(f'looking at edges for node {next_v} with value {vertex_value}')
+                # print(f'looking at edges for node {next_v} with value {vertex_value}')
 
-        #         for edge in self.graph.edges[next_v]:
-        #             edge_value = self.graph.vertices[edge]
+                for edge in self.graph.edges[next_v]:
+                    edge_value = self.graph.vertices[edge]
 
-        #             if vertex_value == edge_value and edge not in self.known_cells:
-        #                 edge_value += 1
+                    if vertex_value == edge_value and edge not in self.known_cells:
+                        edge_value += 1
 
-        #                 self.graph.update_vertex(edge, edge_value)
+                        self.graph.update_vertex(edge, edge_value)
 
-        #             if edge_value in self.graph.get_adj_values(edge) or edge not in visited:
-        #                 queue.append(edge)
+                    if edge_value in self.graph.get_adj_values(edge) or edge not in visited:
+                        queue.append(edge)
 
-        #             if edge not in visited:
-        #                 visited.append(edge)
+                    if edge not in visited:
+                        visited.append(edge)
 
         res = []
         row = []
